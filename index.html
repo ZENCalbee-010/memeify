@@ -4,10 +4,174 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>vibe-coding-exercise</title>
+    <meta name="description" content="MemeCraft Studio - Modern high-performance meme & poster generator with text styling, emojis, stickers, layer reordering, filters, and multi-format export." />
+    <title>MemeCraft Studio - Modern Meme & Poster Generator</title>
+    <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
-    <div id="app"></div>
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="brand-container">
+        <div class="brand-logo" id="brand-logo">🎭</div>
+        <div>
+          <h1 class="brand-title">MemeCraft Studio</h1>
+        </div>
+        <span class="brand-badge">Pro 2.0</span>
+      </div>
+
+      <div class="header-actions">
+        <button id="btn-undo" class="btn btn-icon" title="Undo (Ctrl+Z)" disabled>
+          ↩️
+        </button>
+        <button id="btn-redo" class="btn btn-icon" title="Redo (Ctrl+Y)" disabled>
+          ↪️
+        </button>
+        <button id="btn-reset-canvas" class="btn" title="Reset to blank template">
+          🔄 Reset
+        </button>
+        <button id="btn-saved-memes" class="btn" title="View Saved Memes Gallery">
+          📁 My Memes
+        </button>
+        <button id="btn-export-dropdown" class="btn btn-primary" title="Export Meme">
+          💾 Export / Save
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="app-workspace">
+      <!-- Left Sidebar -->
+      <aside class="app-sidebar">
+        <!-- Tab navigation -->
+        <nav class="tabs-nav" id="sidebar-tabs">
+          <button class="tab-btn active" data-tab="templates" id="tab-btn-templates">
+            🖼️ Templates
+          </button>
+          <button class="tab-btn" data-tab="text" id="tab-btn-text">
+            ✍️ Text
+          </button>
+          <button class="tab-btn" data-tab="stickers" id="tab-btn-stickers">
+            😎 Stickers
+          </button>
+          <button class="tab-btn" data-tab="layers" id="tab-btn-layers">
+            📑 Layers
+          </button>
+          <button class="tab-btn" data-tab="filters" id="tab-btn-filters">
+            🎨 Filters
+          </button>
+        </nav>
+
+        <!-- Tab 1: Templates & Image Upload -->
+        <div class="tab-content active" id="tab-panel-templates">
+          <!-- Upload Image -->
+          <div class="sidebar-section">
+            <h2 class="section-title">Upload Image</h2>
+            <div class="upload-dropzone" id="upload-dropzone">
+              <input type="file" id="image-file-input" class="file-input-hidden" accept="image/*" />
+              <div class="upload-icon">📤</div>
+              <div class="upload-title">Drop your image here</div>
+              <div class="upload-subtitle">Supports JPG, PNG, WebP, SVG or click to browse</div>
+            </div>
+          </div>
+
+          <!-- Aspect Ratio Options -->
+          <div class="sidebar-section">
+            <h2 class="section-title">Aspect Ratio</h2>
+            <div class="aspect-ratios" id="aspect-ratio-controls">
+              <button class="aspect-btn active" data-ratio="original">Original</button>
+              <button class="aspect-btn" data-ratio="1:1">1:1 Square</button>
+              <button class="aspect-btn" data-ratio="4:5">4:5 Insta</button>
+              <button class="aspect-btn" data-ratio="16:9">16:9 Wide</button>
+              <button class="aspect-btn" data-ratio="9:16">9:16 Story</button>
+            </div>
+          </div>
+
+          <!-- Built-in Templates Library -->
+          <div class="sidebar-section">
+            <h2 class="section-title">
+              <span>Meme Templates</span>
+              <span id="template-count-badge" style="font-size: 0.7rem; color: var(--accent-secondary); font-weight: 600;">6 templates</span>
+            </h2>
+            <div class="templates-grid" id="templates-grid">
+              <!-- Dynamically populated from BUILT_IN_TEMPLATES -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Text Layers (Phase 2 placeholder/initial) -->
+        <div class="tab-content" id="tab-panel-text">
+          <div class="sidebar-section">
+            <h2 class="section-title">Add Text Layer</h2>
+            <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+              <button id="btn-add-top-text" class="btn btn-primary" style="flex: 1;">+ Top Text</button>
+              <button id="btn-add-bottom-text" class="btn btn-primary" style="flex: 1;">+ Bottom Text</button>
+            </div>
+            <button id="btn-add-custom-text" class="btn" style="width: 100%;">+ Custom Floating Text</button>
+          </div>
+          <div id="text-layer-controls-container">
+            <!-- Populated when text layer is active in Phase 2 -->
+            <p style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 20px 0;">
+              Select or add a text layer to customize typography, colors, and outlines.
+            </p>
+          </div>
+        </div>
+
+        <!-- Tab 3: Stickers & Emojis (Phase 3 placeholder/initial) -->
+        <div class="tab-content" id="tab-panel-stickers">
+          <div id="stickers-container">
+            <p style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 20px 0;">
+              Stickers & Emojis library will be configured here.
+            </p>
+          </div>
+        </div>
+
+        <!-- Tab 4: Layer Management (Phase 4 placeholder/initial) -->
+        <div class="tab-content" id="tab-panel-layers">
+          <div id="layers-list-container">
+            <p style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 20px 0;">
+              Layers list will display all active canvas elements.
+            </p>
+          </div>
+        </div>
+
+        <!-- Tab 5: Visual Effects / Filters (Phase 4 placeholder/initial) -->
+        <div class="tab-content" id="tab-panel-filters">
+          <div id="filters-container">
+            <p style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 20px 0;">
+              Filters and visual adjustments will appear here.
+            </p>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Center Canvas Viewport -->
+      <section class="app-viewport">
+        <!-- Viewport Toolbar -->
+        <div class="viewport-toolbar">
+          <div class="viewport-info">
+            <span class="info-pill" id="canvas-dim-badge">800 × 800 px</span>
+            <span class="info-pill" id="canvas-template-badge">Drake Hotline Bling</span>
+          </div>
+
+          <div style="display: flex; gap: 8px;">
+            <button id="btn-zoom-fit" class="btn btn-icon" title="Fit to Screen" style="height: 32px; width: 32px; padding: 4px;">
+              🔍
+            </button>
+          </div>
+        </div>
+
+        <!-- Canvas Container -->
+        <div class="canvas-container" id="canvas-container">
+          <div class="canvas-wrapper" id="canvas-wrapper">
+            <canvas id="meme-canvas"></canvas>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Toast container -->
+    <div class="toast-container" id="toast-container"></div>
+
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
