@@ -2,6 +2,8 @@ import { MemeCanvas } from './canvas/MemeCanvas.js';
 import { BUILT_IN_TEMPLATES, svgToDataUrl, getTemplateById } from './templates/templateData.js';
 import { setupTextPanel } from './ui/textControls.js';
 import { setupStickerPanel } from './ui/stickerControls.js';
+import { setupLayerPanel } from './ui/layerControls.js';
+import { setupFilterPanel } from './ui/filterControls.js';
 import { TextLayer } from './canvas/TextLayer.js';
 
 // Global state
@@ -259,6 +261,8 @@ async function init() {
   setupAspectRatios();
   setupTextPanel(memeCanvas);
   setupStickerPanel(memeCanvas);
+  setupLayerPanel(memeCanvas);
+  setupFilterPanel(memeCanvas);
 
   // When a layer is selected by clicking on canvas, switch to corresponding tab
   memeCanvas.onChange(({ type }) => {

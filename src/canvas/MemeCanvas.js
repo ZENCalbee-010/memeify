@@ -292,6 +292,164 @@ export class MemeCanvas {
   }
 
   /**
+   * Move layer up one step in z-order
+   */
+  moveLayerUp(layerId) {
+    const idx = this.layers.findIndex(l => l.id === layerId);
+    if (idx !== -1 && idx < this.layers.length - 1) {
+      const temp = this.layers[idx];
+      this.layers[idx] = this.layers[idx + 1];
+      this.layers[idx + 1] = temp;
+      this.render();
+      this.notifyChange('layers-reordered');
+    }
+  }
+
+  /**
+   * Move layer down one step in z-order
+   */
+  moveLayerDown(layerId) {
+    const idx = this.layers.findIndex(l => l.id === layerId);
+    if (idx > 0) {
+      const temp = this.layers[idx];
+      this.layers[idx] = this.layers[idx - 1];
+      this.layers[idx - 1] = temp;
+      this.render();
+      this.notifyChange('layers-reordered');
+    }
+  }
+
+  /**
+   * Bring layer to the very top
+   */
+  bringToFront(layerId) {
+    const idx = this.layers.findIndex(l => l.id === layerId);
+    if (idx !== -1 && idx < this.layers.length - 1) {
+      const [layer] = this.layers.splice(idx, 1);
+      this.layers.push(layer);
+      this.render();
+      this.notifyChange('layers-reordered');
+    }
+  }
+
+  /**
+   * Send layer to the very bottom
+   */
+  sendToBack(layerId) {
+    const idx = this.layers.findIndex(l => l.id === layerId);
+    if (idx > 0) {
+      const [layer] = this.layers.splice(idx, 1);
+      this.layers.unshift(layer);
+      this.render();
+      this.notifyChange('layers-reordered');
+    }
+  }
+
+  /**
+   * Toggle visibility of layer
+   */
+  toggleLayerVisibility(layerId) {
+    const layer = this.getLayer(layerId);
+    if (layer) {
+      layer.visible = !layer.visible;
+      this.render();
+      this.notifyChange('layer-visibility-changed');
+    }
+  }
+
+  /**
+   * Duplicate a layer
+   */
+  duplicateLayer(layerId) {
+    const layer = this.getLayer(layerId);
+    if (!layer) return null;
+
+    let clone = null;
+    if (layer.type === 'text') {
+      clone = new TextLayer({
+        ...layer,
+        id: `text-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+        x: layer.x + 20,
+        y: layer.y + 20
+      });
+    } else if (layer.type === 'sticker') {
+      const StickerLayerClass = layer.constructor;
+      clone = new StickerLayerClass({
+        ...layer,
+        id: `sticker-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+        x: layer.x + 20,
+        y: layer.y + 20
+      });
+    }
+
+    if (clone) {
+      const idx = this.layers.findIndex(l => l.id === layerId);
+      this.layers.splice(idx + 1, 0, clone);
+      this.activeLayerId = clone.id;
+      this.render();
+      this.notifyChange('layer-added');
+    }
+    return clone;
+  }
+
+  /**
+   * Set filter parameter
+   */
+  setFilter(filterName, value) {
+    if (filterName in this.filters) {
+      this.filters[filterName] = value;
+      this.render();
+      this.notifyChange('filters-changed');
+    }
+  }
+
+  /**
+   * Reset all filters to default
+   */
+  resetFilters() {
+    this.filters = {
+      grayscale: 0,
+      brightness: 100,
+      contrast: 100,
+      blur: 0,
+      sepia: 0,
+      saturation: 100,
+      invert: 0
+    };
+    this.render();
+    this.notifyChange('filters-changed');
+  }
+
+  /**
+   * Apply preset filters
+   */
+  applyFilterPreset(presetName) {
+    switch (presetName) {
+      case 'vintage':
+        this.filters = { grayscale: 0, brightness: 95, contrast: 110, blur: 0, sepia: 40, saturation: 80, invert: 0 };
+        break;
+      case 'bw':
+        this.filters = { grayscale: 100, brightness: 105, contrast: 130, blur: 0, sepia: 0, saturation: 0, invert: 0 };
+        break;
+      case 'cyber':
+        this.filters = { grayscale: 0, brightness: 110, contrast: 140, blur: 0, sepia: 0, saturation: 160, invert: 0 };
+        break;
+      case 'soft':
+        this.filters = { grayscale: 0, brightness: 105, contrast: 85, blur: 1, sepia: 10, saturation: 90, invert: 0 };
+        break;
+      case 'invert':
+        this.filters = { grayscale: 0, brightness: 100, contrast: 100, blur: 0, sepia: 0, saturation: 100, invert: 100 };
+        break;
+      case 'none':
+      default:
+        this.resetFilters();
+        return;
+    }
+    this.render();
+    this.notifyChange('filters-changed');
+  }
+
+  /**
    * Helper to translate client coordinates to internal canvas coordinates
    */
   getCanvasCoordinates(e) {
