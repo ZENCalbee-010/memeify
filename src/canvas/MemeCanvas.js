@@ -1,5 +1,6 @@
 import { getTemplateById, svgToDataUrl } from '../templates/templateData.js';
 import { TextLayer } from './TextLayer.js';
+import { StickerLayer } from './StickerLayer.js';
 
 export class MemeCanvas {
   constructor(canvasElement, options = {}) {
@@ -552,5 +553,93 @@ export class MemeCanvas {
     this.activeLayerId = prevActive;
     this.render();
     return dataUrl;
+  }
+
+  /**
+   * Serialize current canvas state to JSON-serializable snapshot
+   */
+  serialize() {
+    return {
+      width: this.width,
+      height: this.height,
+      aspectRatio: this.aspectRatio,
+      currentTemplateId: this.currentTemplateId,
+      baseImageSrc: this.baseImageSrc,
+      filters: { ...this.filters },
+      activeLayerId: this.activeLayerId,
+      layers: this.layers.map(layer => {
+        if (layer.type === 'text') {
+          return {
+            type: 'text',
+            id: layer.id,
+            text: layer.text,
+            x: layer.x,
+            y: layer.y,
+            fontFamily: layer.fontFamily,
+            fontSize: layer.fontSize,
+            fontWeight: layer.fontWeight,
+            fillColor: layer.fillColor,
+            strokeColor: layer.strokeColor,
+            strokeWidth: layer.strokeWidth,
+            textAlign: layer.textAlign,
+            opacity: layer.opacity,
+            uppercase: layer.uppercase,
+            shadow: layer.shadow,
+            visible: layer.visible,
+            rotation: layer.rotation
+          };
+        } else if (layer.type === 'sticker') {
+          return {
+            type: 'sticker',
+            id: layer.id,
+            stickerType: layer.stickerType,
+            content: layer.content,
+            x: layer.x,
+            y: layer.y,
+            size: layer.size,
+            rotation: layer.rotation,
+            opacity: layer.opacity,
+            flipX: layer.flipX,
+            visible: layer.visible
+          };
+        }
+        return { ...layer };
+      })
+    };
+  }
+
+  /**
+   * Restore canvas state from serialized snapshot
+   */
+  async loadState(state) {
+    if (!state) return;
+
+    this.width = state.width || 800;
+    this.height = state.height || 800;
+    this.aspectRatio = state.aspectRatio || 'original';
+    this.filters = { ...state.filters };
+
+    // Restore base image
+    if (state.baseImageSrc && state.baseImageSrc !== this.baseImageSrc) {
+      await this.loadImageFromUrl(state.baseImageSrc);
+    } else if (state.currentTemplateId && state.currentTemplateId !== this.currentTemplateId) {
+      await this.loadTemplate(state.currentTemplateId);
+    }
+    this.currentTemplateId = state.currentTemplateId;
+
+    // Reconstruct layers
+    this.layers = (state.layers || []).map(layerData => {
+      if (layerData.type === 'text') {
+        return new TextLayer(layerData);
+      } else if (layerData.type === 'sticker') {
+        return new StickerLayer(layerData);
+      }
+      return layerData;
+    });
+
+    this.activeLayerId = state.activeLayerId;
+    this.updateCanvasDimensions();
+    this.render();
+    this.notifyChange('state-restored');
   }
 }

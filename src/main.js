@@ -4,10 +4,13 @@ import { setupTextPanel } from './ui/textControls.js';
 import { setupStickerPanel } from './ui/stickerControls.js';
 import { setupLayerPanel } from './ui/layerControls.js';
 import { setupFilterPanel } from './ui/filterControls.js';
+import { setupModals } from './ui/modals.js';
+import { HistoryManager } from './canvas/HistoryManager.js';
 import { TextLayer } from './canvas/TextLayer.js';
 
 // Global state
 let memeCanvas = null;
+let historyManager = null;
 
 // Helper to display toast notifications
 export function showToast(message, duration = 2500) {
@@ -263,6 +266,24 @@ async function init() {
   setupStickerPanel(memeCanvas);
   setupLayerPanel(memeCanvas);
   setupFilterPanel(memeCanvas);
+  setupModals(memeCanvas);
+
+  // Initialize undo/redo history manager
+  historyManager = new HistoryManager(memeCanvas);
+  window.historyManager = historyManager;
+
+  const btnUndo = document.getElementById('btn-undo');
+  const btnRedo = document.getElementById('btn-redo');
+
+  btnUndo?.addEventListener('click', async () => {
+    const success = await historyManager.undo();
+    if (success) showToast('Undo action');
+  });
+
+  btnRedo?.addEventListener('click', async () => {
+    const success = await historyManager.redo();
+    if (success) showToast('Redo action');
+  });
 
   // When a layer is selected by clicking on canvas, switch to corresponding tab
   memeCanvas.onChange(({ type }) => {
@@ -283,6 +304,7 @@ async function init() {
     const tmpl = await memeCanvas.loadTemplate('drake');
     updateViewportBadges();
     applyTemplateTexts(tmpl);
+    historyManager.pushCurrentState();
   } catch (err) {
     console.error('Failed to load initial template', err);
   }
