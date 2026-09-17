@@ -1,6 +1,7 @@
 import { MemeCanvas } from './canvas/MemeCanvas.js';
 import { BUILT_IN_TEMPLATES, svgToDataUrl, getTemplateById } from './templates/templateData.js';
 import { setupTextPanel } from './ui/textControls.js';
+import { setupStickerPanel } from './ui/stickerControls.js';
 import { TextLayer } from './canvas/TextLayer.js';
 
 // Global state
@@ -257,13 +258,18 @@ async function init() {
   setupUploadDropzone();
   setupAspectRatios();
   setupTextPanel(memeCanvas);
+  setupStickerPanel(memeCanvas);
 
-  // When a text layer is selected by clicking on canvas, switch to Text tab
+  // When a layer is selected by clicking on canvas, switch to corresponding tab
   memeCanvas.onChange(({ type }) => {
     if (type === 'active-layer-changed') {
       const active = memeCanvas.getActiveLayer();
-      if (active && active.type === 'text') {
-        switchTab('text');
+      if (active) {
+        if (active.type === 'text') {
+          switchTab('text');
+        } else if (active.type === 'sticker') {
+          switchTab('stickers');
+        }
       }
     }
   });
