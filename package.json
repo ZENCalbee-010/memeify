@@ -1,0 +1,21 @@
+{
+  "name": "vibe-coding-exercise",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@vitest/ui": "^5.0.1",
+    "happy-dom": "^20.14.5",
+    "vite": "^8.3.0",
+    "vitest": "^5.0.1"
+  },
+  "dependencies": {
+    "jspdf": "^4.2.1",
+    "lucide": "^1.47.0"
+  }
+}
