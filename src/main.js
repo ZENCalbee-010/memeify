@@ -1,5 +1,7 @@
 import { MemeCanvas } from './canvas/MemeCanvas.js';
-import { BUILT_IN_TEMPLATES, svgToDataUrl } from './templates/templateData.js';
+import { BUILT_IN_TEMPLATES, svgToDataUrl, getTemplateById } from './templates/templateData.js';
+import { setupTextPanel } from './ui/textControls.js';
+import { TextLayer } from './canvas/TextLayer.js';
 
 // Global state
 let memeCanvas = null;
@@ -51,6 +53,12 @@ function initTemplateGallery() {
       try {
         await memeCanvas.loadTemplate(tmpl.id);
         updateViewportBadges();
+
+        // If no text layers exist, populate default template texts
+        if (memeCanvas.layers.filter(l => l.type === 'text').length === 0) {
+          applyTemplateTexts(tmpl);
+        }
+
         showToast(`Loaded template: ${tmpl.name}`);
       } catch (err) {
         console.error(err);
@@ -191,6 +199,49 @@ function setupTabs() {
   });
 }
 
+export function switchTab(tabKey) {
+  const tabsNav = document.getElementById('sidebar-tabs');
+  if (!tabsNav) return;
+
+  tabsNav.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === tabKey);
+  });
+
+  document.querySelectorAll('.tab-content').forEach(panel => {
+    panel.classList.toggle('active', panel.id === `tab-panel-${tabKey}`);
+  });
+}
+
+export function applyTemplateTexts(tmpl) {
+  if (!memeCanvas) return;
+  
+  if (tmpl.defaultTopText) {
+    memeCanvas.addLayer(new TextLayer({
+      text: tmpl.defaultTopText,
+      x: Math.round(memeCanvas.width / 2),
+      y: 90,
+      fontSize: Math.round(memeCanvas.width * 0.065),
+      textAlign: 'center',
+      fontFamily: 'Impact',
+      strokeWidth: 5,
+      uppercase: true
+    }));
+  }
+
+  if (tmpl.defaultBottomText) {
+    memeCanvas.addLayer(new TextLayer({
+      text: tmpl.defaultBottomText,
+      x: Math.round(memeCanvas.width / 2),
+      y: memeCanvas.height - 50,
+      fontSize: Math.round(memeCanvas.width * 0.065),
+      textAlign: 'center',
+      fontFamily: 'Impact',
+      strokeWidth: 5,
+      uppercase: true
+    }));
+  }
+}
+
 // Initialize Application
 async function init() {
   const canvasEl = document.getElementById('meme-canvas');
@@ -205,11 +256,23 @@ async function init() {
   initTemplateGallery();
   setupUploadDropzone();
   setupAspectRatios();
+  setupTextPanel(memeCanvas);
+
+  // When a text layer is selected by clicking on canvas, switch to Text tab
+  memeCanvas.onChange(({ type }) => {
+    if (type === 'active-layer-changed') {
+      const active = memeCanvas.getActiveLayer();
+      if (active && active.type === 'text') {
+        switchTab('text');
+      }
+    }
+  });
 
   // Load default template: Drake Hotline Bling
   try {
-    await memeCanvas.loadTemplate('drake');
+    const tmpl = await memeCanvas.loadTemplate('drake');
     updateViewportBadges();
+    applyTemplateTexts(tmpl);
   } catch (err) {
     console.error('Failed to load initial template', err);
   }
@@ -218,10 +281,12 @@ async function init() {
   const resetBtn = document.getElementById('btn-reset-canvas');
   if (resetBtn) {
     resetBtn.addEventListener('click', async () => {
-      await memeCanvas.loadTemplate('drake');
+      memeCanvas.layers = [];
+      const tmpl = await memeCanvas.loadTemplate('drake');
       document.querySelectorAll('.template-card').forEach(c => {
         c.classList.toggle('active', c.dataset.templateId === 'drake');
       });
+      applyTemplateTexts(tmpl);
       updateViewportBadges();
       showToast('Canvas reset to default template');
     });

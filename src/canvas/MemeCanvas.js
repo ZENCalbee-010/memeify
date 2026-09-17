@@ -1,4 +1,5 @@
 import { getTemplateById, svgToDataUrl } from '../templates/templateData.js';
+import { TextLayer } from './TextLayer.js';
 
 export class MemeCanvas {
   constructor(canvasElement, options = {}) {
@@ -30,11 +31,16 @@ export class MemeCanvas {
     this.layers = [];
     this.activeLayerId = null;
 
+    // Dragging interaction state
+    this.isDragging = false;
+    this.dragOffset = { x: 0, y: 0 };
+
     // Listeners for change events
     this.listeners = new Set();
 
-    // Initialize dimensions
+    // Initialize dimensions & pointer listeners
     this.updateCanvasDimensions();
+    this.setupInteractions();
   }
 
   onChange(callback) {
@@ -226,17 +232,167 @@ export class MemeCanvas {
   }
 
   /**
-   * Placeholder hook for rendering a layer (extended in next phases)
+   * Render individual layer
    */
   renderLayer(layer) {
-    // Extended in subsequent feature branches
+    if (!this.ctx) return;
+    const isSelected = layer.id === this.activeLayerId;
+    layer.draw(this.ctx, isSelected);
+  }
+
+  /**
+   * Add a new layer and make it active
+   */
+  addLayer(layer) {
+    this.layers.push(layer);
+    this.activeLayerId = layer.id;
+    this.render();
+    this.notifyChange('layer-added');
+    return layer;
+  }
+
+  /**
+   * Remove a layer by ID
+   */
+  removeLayer(layerId) {
+    const idx = this.layers.findIndex(l => l.id === layerId);
+    if (idx !== -1) {
+      this.layers.splice(idx, 1);
+      if (this.activeLayerId === layerId) {
+        this.activeLayerId = this.layers.length > 0 ? this.layers[this.layers.length - 1].id : null;
+      }
+      this.render();
+      this.notifyChange('layer-removed');
+    }
+  }
+
+  /**
+   * Get layer by ID
+   */
+  getLayer(layerId) {
+    return this.layers.find(l => l.id === layerId) || null;
+  }
+
+  /**
+   * Get currently active/selected layer
+   */
+  getActiveLayer() {
+    return this.getLayer(this.activeLayerId);
+  }
+
+  /**
+   * Select active layer
+   */
+  setActiveLayer(layerId) {
+    if (this.activeLayerId !== layerId) {
+      this.activeLayerId = layerId;
+      this.render();
+      this.notifyChange('active-layer-changed');
+    }
+  }
+
+  /**
+   * Helper to translate client coordinates to internal canvas coordinates
+   */
+  getCanvasCoordinates(e) {
+    const rect = this.canvas.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) return { x: 0, y: 0 };
+    
+    const scaleX = this.width / rect.width;
+    const scaleY = this.height / rect.height;
+
+    return {
+      x: (e.clientX - rect.left) * scaleX,
+      y: (e.clientY - rect.top) * scaleY
+    };
+  }
+
+  /**
+   * Pointer & touch event interaction system for canvas dragging and selection
+   */
+  setupInteractions() {
+    if (!this.canvas || typeof window === 'undefined') return;
+
+    const handlePointerDown = (e) => {
+      const { x, y } = this.getCanvasCoordinates(e);
+
+      // Hit-test from topmost layer (end of array) to bottom
+      let hitLayer = null;
+      for (let i = this.layers.length - 1; i >= 0; i--) {
+        const layer = this.layers[i];
+        if (layer.visible && layer.containsPoint(x, y)) {
+          hitLayer = layer;
+          break;
+        }
+      }
+
+      if (hitLayer) {
+        this.setActiveLayer(hitLayer.id);
+        this.isDragging = true;
+        this.dragOffset = {
+          x: x - hitLayer.x,
+          y: y - hitLayer.y
+        };
+        this.canvas.style.cursor = 'grabbing';
+      } else {
+        // Deselect if clicking on empty canvas area
+        this.setActiveLayer(null);
+      }
+    };
+
+    const handlePointerMove = (e) => {
+      const { x, y } = this.getCanvasCoordinates(e);
+
+      if (this.isDragging && this.activeLayerId) {
+        const activeLayer = this.getActiveLayer();
+        if (activeLayer) {
+          activeLayer.x = Math.round(x - this.dragOffset.x);
+          activeLayer.y = Math.round(y - this.dragOffset.y);
+          this.render();
+          this.notifyChange('layer-moved');
+        }
+      } else {
+        // Check hover
+        let hovering = false;
+        for (let i = this.layers.length - 1; i >= 0; i--) {
+          const layer = this.layers[i];
+          if (layer.visible && layer.containsPoint(x, y)) {
+            hovering = true;
+            break;
+          }
+        }
+        this.canvas.style.cursor = hovering ? 'grab' : 'crosshair';
+      }
+    };
+
+    const handlePointerUp = () => {
+      if (this.isDragging) {
+        this.isDragging = false;
+        this.canvas.style.cursor = 'grab';
+        this.notifyChange('layer-drag-end');
+      }
+    };
+
+    this.canvas.addEventListener('pointerdown', handlePointerDown);
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', handlePointerUp);
+    window.addEventListener('pointercancel', handlePointerUp);
   }
 
   /**
    * Convert canvas to image Data URL
    */
   toDataURL(format = 'image/png', quality = 0.95) {
-    // Render at 1:1 pixel scale to export clean output
-    return this.canvas.toDataURL(format, quality);
+    // Temporarily clear selection box for clean export
+    const prevActive = this.activeLayerId;
+    this.activeLayerId = null;
+    this.render();
+    
+    const dataUrl = this.canvas.toDataURL(format, quality);
+    
+    // Restore selection
+    this.activeLayerId = prevActive;
+    this.render();
+    return dataUrl;
   }
 }
