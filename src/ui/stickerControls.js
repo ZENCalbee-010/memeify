@@ -28,7 +28,7 @@ export function setupStickerPanel(memeCanvas) {
       </h2>
       <div class="stickers-grid" id="vector-stickers-grid">
         ${MEME_STICKERS.map(s => {
-          const url = svgToStickerUrl(s.svg);
+          const url = s.imageSrc || svgToStickerUrl(s.svg);
           return `
             <div class="sticker-card" data-sticker-id="${s.id}" data-url="${encodeURIComponent(url)}" title="${s.name}">
               <img src="${url}" alt="${s.name}" />
@@ -81,8 +81,9 @@ export function setupStickerPanel(memeCanvas) {
   container.querySelectorAll('.sticker-card').forEach(card => {
     card.addEventListener('click', () => {
       const url = decodeURIComponent(card.dataset.url);
+      const isSvg = url.startsWith('data:image/svg');
       const layer = new StickerLayer({
-        stickerType: 'svg',
+        stickerType: isSvg ? 'svg' : 'image',
         content: url,
         x: Math.round(memeCanvas.width / 2),
         y: Math.round(memeCanvas.height / 2),

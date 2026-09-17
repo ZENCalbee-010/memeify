@@ -78,6 +78,23 @@ body {
   gap: 10px;
 }
 
+.brand-logo-img {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-medium);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.brand-logo-img:hover {
+  transform: scale(1.08) rotate(-3deg);
+  border-color: var(--accent-primary);
+}
+
 .brand-logo {
   width: 34px;
   height: 34px;
