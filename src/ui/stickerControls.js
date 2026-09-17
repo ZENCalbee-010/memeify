@@ -44,8 +44,11 @@ export function setupStickerPanel(memeCanvas) {
       <h2 class="section-title">Upload Custom Sticker</h2>
       <div class="upload-dropzone" id="sticker-upload-zone" style="padding: 14px;">
         <input type="file" id="sticker-file-input" class="file-input-hidden" accept="image/*" />
-        <div style="font-size: 1.3rem;">✨</div>
-        <div class="upload-title" style="font-size: 0.8rem;">Upload Transparent PNG / SVG</div>
+        <div class="upload-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+        </div>
+        <div class="upload-title" style="font-size: 0.8rem;">Upload PNG or SVG Sticker</div>
+        <div class="upload-subtitle">Transparent backgrounds work best</div>
       </div>
     </div>
 
@@ -171,17 +174,20 @@ function renderStickerInspector(container, layer, memeCanvas) {
     </div>
 
     <div style="display: flex; gap: 8px; margin-top: 10px;">
-      <button type="button" id="btn-flip-x" class="btn ${layer.flipX ? 'btn-primary' : ''}" style="flex: 1; font-size: 0.75rem;">
-        ↔️ Flip Horizontally
+      <button type="button" id="btn-flip-x" class="btn ${layer.flipX ? 'btn-primary' : ''}" style="flex: 1; font-size: 0.76rem;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="8 20 4 16 8 12"/><polyline points="16 4 20 8 16 12"/><line x1="4" x2="20" y1="16" y2="16"/><line x1="20" x2="4" y1="8" y2="8"/></svg>
+        <span>Flip Horizontal</span>
       </button>
     </div>
 
-    <div style="display: flex; gap: 8px; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border-color);">
-      <button type="button" id="btn-dup-sticker" class="btn" style="flex: 1; font-size: 0.8rem;">
-        📋 Duplicate
+    <div style="display: flex; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border-subtle);">
+      <button type="button" id="btn-dup-sticker" class="btn" style="flex: 1; font-size: 0.78rem;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+        <span>Duplicate</span>
       </button>
-      <button type="button" id="btn-del-sticker" class="btn btn-danger" style="flex: 1; font-size: 0.8rem;">
-        🗑️ Delete
+      <button type="button" id="btn-del-sticker" class="btn btn-danger" style="flex: 1; font-size: 0.78rem;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+        <span>Delete</span>
       </button>
     </div>
   `;

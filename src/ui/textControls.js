@@ -77,10 +77,12 @@ export function setupTextPanel(memeCanvas) {
 function renderEmptyState(container) {
   if (!container) return;
   container.innerHTML = `
-    <div style="text-align: center; padding: 28px 12px; color: var(--text-muted); background: rgba(15, 23, 42, 0.4); border-radius: var(--radius-md); border: 1px dashed var(--border-color);">
-      <div style="font-size: 1.8rem; margin-bottom: 8px;">👆</div>
-      <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px;">No Text Layer Selected</div>
-      <div style="font-size: 0.75rem;">Click on any text on the canvas or click a button above to add one.</div>
+    <div style="text-align: center; padding: 28px 16px; color: var(--text-muted); background: var(--bg-surface); border-radius: var(--radius-md); border: 1px dashed var(--border-subtle);">
+      <div style="color: var(--text-secondary); margin-bottom: 8px;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" x2="15" y1="20" y2="20"/><line x1="12" x2="12" y1="4" y2="20"/></svg>
+      </div>
+      <div style="font-size: 0.82rem; font-weight: 600; color: var(--text-title); margin-bottom: 4px;">No Text Layer Selected</div>
+      <div style="font-size: 0.74rem; line-height: 1.4;">Click any text on the canvas to edit, or use the buttons above to add new text.</div>
     </div>
   `;
 }
@@ -192,12 +194,14 @@ export function renderControls(container, layer, memeCanvas) {
     </div>
 
     <!-- Actions: Duplicate / Delete -->
-    <div style="display: flex; gap: 8px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border-color);">
-      <button type="button" id="btn-dup-layer" class="btn" style="flex: 1; font-size: 0.8rem;">
-        📋 Duplicate
+    <div style="display: flex; gap: 8px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border-subtle);">
+      <button type="button" id="btn-dup-layer" class="btn" style="flex: 1; font-size: 0.78rem;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+        <span>Duplicate</span>
       </button>
-      <button type="button" id="btn-del-layer" class="btn btn-danger" style="flex: 1; font-size: 0.8rem;">
-        🗑️ Delete
+      <button type="button" id="btn-del-layer" class="btn btn-danger" style="flex: 1; font-size: 0.78rem;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+        <span>Delete</span>
       </button>
     </div>
   `;

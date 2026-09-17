@@ -47,37 +47,39 @@ export function setupLayerPanel(memeCanvas) {
       item.className = `layer-item ${isSelected ? 'active' : ''} ${!layer.visible ? 'hidden-layer' : ''}`;
       item.dataset.layerId = layer.id;
 
-      let icon = '✍️';
+      let iconHtml = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-text);"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" x2="15" y1="20" y2="20"/><line x1="12" x2="12" y1="4" y2="20"/></svg>`;
       let title = layer.text || 'Text Layer';
       if (layer.type === 'sticker') {
-        icon = layer.stickerType === 'emoji' ? layer.content : '😎';
+        iconHtml = layer.stickerType === 'emoji' ? `<span style="font-size: 1.1rem;">${layer.content}</span>` : `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-text);"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/></svg>`;
         title = layer.stickerType === 'emoji' ? `Emoji: ${layer.content}` : 'Sticker';
       }
 
       item.innerHTML = `
         <div class="layer-info" style="display: flex; align-items: center; gap: 8px; flex: 1; overflow: hidden; cursor: pointer;">
-          <span style="font-size: 1.1rem;">${icon}</span>
-          <span class="layer-name" style="font-size: 0.8rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+          <div style="display: flex; align-items: center; justify-content: center; width: 22px;">${iconHtml}</div>
+          <span class="layer-name" style="font-size: 0.78rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
             ${title}
           </span>
         </div>
 
-        <div class="layer-actions" style="display: flex; align-items: center; gap: 4px;">
+        <div class="layer-actions" style="display: flex; align-items: center; gap: 3px;">
           <!-- Visibility -->
           <button type="button" class="btn-layer-action btn-toggle-vis" title="${layer.visible ? 'Hide layer' : 'Show layer'}">
-            ${layer.visible ? '👁️' : '🙈'}
+            ${layer.visible ? 
+              `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>` : 
+              `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>`}
           </button>
           <!-- Up -->
           <button type="button" class="btn-layer-action btn-move-up" title="Move Up" ${isTop ? 'disabled style="opacity: 0.25;"' : ''}>
-            🔼
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
           </button>
           <!-- Down -->
           <button type="button" class="btn-layer-action btn-move-down" title="Move Down" ${isBottom ? 'disabled style="opacity: 0.25;"' : ''}>
-            🔽
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
           <!-- Delete -->
           <button type="button" class="btn-layer-action btn-del" title="Delete layer">
-            🗑️
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
           </button>
         </div>
       `;
