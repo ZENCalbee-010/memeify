@@ -26,7 +26,7 @@ export const MEME_STICKERS = [
     id: 'memeify-mascot',
     name: 'Memeify Mascot',
     category: 'badge',
-    imageSrc: '/logo.png',
+    imageSrc: '/logo.jpg',
     svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100"><circle cx="50" cy="50" r="48" fill="#3b82f6"/><text x="50" y="55" font-family="sans-serif" font-size="16" font-weight="bold" fill="#fff" text-anchor="middle">Memeify</text></svg>`
   },
   {

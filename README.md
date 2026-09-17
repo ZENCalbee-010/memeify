@@ -3,7 +3,7 @@
 > **Modern, Clean & Intuitive Meme & Poster Generator Web App**  
 > Create, customize, and export viral memes and posters directly in your browser.
 
-![Memeify Logo](public/logo.png)
+![Memeify Logo](public/logo.jpg)
 
 ---
 
