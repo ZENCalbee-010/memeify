@@ -1,4 +1,4 @@
-import { getTemplateById, svgToDataUrl } from '../templates/templateData.js';
+import { getTemplateById, svgToDataUrl, getTemplateUrl } from '../templates/templateData.js';
 import { TextLayer } from './TextLayer.js';
 import { StickerLayer } from './StickerLayer.js';
 
@@ -117,8 +117,8 @@ export class MemeCanvas {
   async loadTemplate(templateId) {
     const template = getTemplateById(templateId);
     this.currentTemplateId = template.id;
-    const dataUrl = svgToDataUrl(template.svg);
-    await this.loadImageFromUrl(dataUrl);
+    const url = getTemplateUrl(template);
+    await this.loadImageFromUrl(url);
     return template;
   }
 

@@ -1,5 +1,5 @@
 import { MemeCanvas } from './canvas/MemeCanvas.js';
-import { BUILT_IN_TEMPLATES, svgToDataUrl, getTemplateById } from './templates/templateData.js';
+import { BUILT_IN_TEMPLATES, svgToDataUrl, getTemplateById, getTemplateUrl } from './templates/templateData.js';
 import { setupTextPanel } from './ui/textControls.js';
 import { setupStickerPanel } from './ui/stickerControls.js';
 import { setupLayerPanel } from './ui/layerControls.js';
@@ -43,11 +43,11 @@ function initTemplateGallery() {
     card.dataset.templateId = tmpl.id;
     card.id = `template-card-${tmpl.id}`;
 
-    const dataUrl = svgToDataUrl(tmpl.svg);
+    const imgUrl = getTemplateUrl(tmpl);
 
     card.innerHTML = `
       <div class="template-thumbnail">
-        <img src="${dataUrl}" alt="${tmpl.name}" loading="lazy" />
+        <img src="${imgUrl}" alt="${tmpl.name}" loading="lazy" />
       </div>
       <div class="template-name">${tmpl.name}</div>
     `;
