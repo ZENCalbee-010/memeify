@@ -324,7 +324,7 @@ async function init() {
     });
   }
 
-  console.log('MemeCraft Studio initialized.');
+  console.log('Memeify Studio initialized.');
 }
 
 window.addEventListener('DOMContentLoaded', init);

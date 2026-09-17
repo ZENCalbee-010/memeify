@@ -1,6 +1,7 @@
 import { jsPDF } from 'jspdf';
 
-const STORAGE_KEY = 'memecraft_saved_memes';
+const STORAGE_KEY = 'memeify_saved_memes';
+const LEGACY_STORAGE_KEY = 'memecraft_saved_memes';
 
 /**
  * Trigger file download from data URL or blob
@@ -51,7 +52,7 @@ export function downloadPDF(memeCanvas, filename = 'meme.pdf') {
  */
 export function getSavedMemes() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
     return raw ? JSON.parse(raw) : [];
   } catch (err) {
     console.error('Failed to read from localStorage', err);
